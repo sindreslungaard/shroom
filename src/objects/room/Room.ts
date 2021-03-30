@@ -18,6 +18,7 @@ import { RoomModelVisualization } from "./RoomModelVisualization";
 import { ParsedTileMap } from "./ParsedTileMap";
 import { getTileColors, getWallColors } from "./util/getTileColors";
 import { EventManager } from "../events/EventManager";
+import { TileCursorRoomObject } from "./TileCursorRoomObject";
 
 export interface Dependencies {
   animationTicker: IAnimationTicker;
@@ -45,6 +46,7 @@ interface CreateOptions {
    * ```
    */
   tilemap: TileMap;
+  disableEvents: boolean
 }
 
 export class Room
@@ -88,8 +90,10 @@ export class Room
     tilemap,
     configuration,
     application,
+    disableEvents,
   }: {
     tilemap: TileMap;
+    disableEvents: boolean;
   } & Dependencies) {
     super();
     const normalizedTileMap =
@@ -107,7 +111,8 @@ export class Room
     this._visualization = new RoomModelVisualization(
       this._eventManager,
       this.application,
-      new ParsedTileMap(normalizedTileMap)
+      new ParsedTileMap(normalizedTileMap),
+      disableEvents
     );
 
     this._roomObjectContainer = new RoomObjectContainer();
@@ -131,6 +136,8 @@ export class Room
     this._visualization.onTileClick.subscribe((value) => {
       this.onTileClick && this.onTileClick(value);
     });
+
+    this.addRoomObject(new TileCursorRoomObject())
   }
 
   /**
@@ -138,8 +145,8 @@ export class Room
    * @param shroom A shroom instance
    * @param options Room creation options
    */
-  static create(shroom: Shroom, { tilemap }: CreateOptions) {
-    return new Room({ ...shroom.dependencies, tilemap });
+  static create(shroom: Shroom, { tilemap, disableEvents }: CreateOptions) {
+    return new Room({ ...shroom.dependencies, tilemap, disableEvents });
   }
 
   /**

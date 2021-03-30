@@ -63,6 +63,8 @@ export class RoomModelVisualization
   private _tileHeight = 8;
   private _wallHeight = 116;
 
+  private _activeTile: RoomPosition | undefined
+
   private _onActiveTileChange = new Subject<RoomPosition>();
   private _onActiveWallChange = new Subject<
     | {
@@ -87,10 +89,13 @@ export class RoomModelVisualization
   private _refreshRoom = false;
   private _rebuildRoom = false;
 
+  private _eventManagerContainer: EventManagerContainer | undefined
+
   constructor(
     private _eventManager: EventManager,
     private _application: PIXI.Application,
-    public readonly parsedTileMap: ParsedTileMap
+    public readonly parsedTileMap: ParsedTileMap,
+    private disableEvents: boolean
   ) {
     super();
 
@@ -98,6 +103,13 @@ export class RoomModelVisualization
       x: this.parsedTileMap.wallOffsets.x,
       y: this.parsedTileMap.wallOffsets.y,
     });
+
+    this._behindWallLayer.interactiveChildren = false
+    this._wallLayer.interactiveChildren = false
+    this._tileLayer.interactiveChildren = false
+    this._landscapeLayer.interactiveChildren = false
+    this._masksLayer.interactiveChildren = false
+    this._primaryLayer.interactiveChildren = false
 
     this._positionalContainer.addChild(this._behindWallLayer);
     this._positionalContainer.addChild(this._wallLayer);
@@ -114,11 +126,19 @@ export class RoomModelVisualization
 
     this.addChild(this._positionalContainer);
 
-    new EventManagerContainer(this._application, this._eventManager);
+    if(!this.disableEvents) {
+      this._eventManagerContainer = new EventManagerContainer(
+        this._application,
+        this._eventManager,
+        this._mouseMove.bind(this),
+        this._mouseUp.bind(this)
+      );
+    }
 
     this._updateHeightmap();
 
     this._application.ticker.add(this._handleTick);
+
   }
 
   addPart(part: IRoomPart): PartNode {
@@ -323,6 +343,7 @@ export class RoomModelVisualization
   }
 
   destroy() {
+    this._eventManagerContainer?.destroy()
     super.destroy();
     this._destroyAllSprites();
   }
@@ -531,7 +552,7 @@ export class RoomModelVisualization
   ) {
     if (this._hideTileCursor) return;
 
-    const position: RoomPosition = { roomX: x, roomY: y, roomZ: z };
+    /* const position: RoomPosition = { roomX: x, roomY: y, roomZ: z };
     const cursor = new TileCursor(
       this._eventManager,
       position,
@@ -553,7 +574,7 @@ export class RoomModelVisualization
     cursor.zIndex = getZOrder(x, y, z) - 1000;
 
     this._tileCursors.push(cursor);
-    (container ?? this._primaryLayer).addChild(cursor);
+    (container ?? this._primaryLayer).addChild(cursor); */
   }
 
   private _handleTick = () => {
@@ -711,4 +732,46 @@ export class RoomModelVisualization
       y: yPos - roomZ * 32,
     };
   }
+
+  private _mouseMove(event: PIXI.InteractionEvent) {
+    const pos = event.data.global
+
+    const pos2 = this._positionalContainer.getGlobalPosition()
+
+    let roomX = Math.round((pos.x - pos2.x - 64) / 64 + (pos.y - pos2.y) / 32)
+    let roomY = Math.round((pos.y - pos2.y) / 32 - (pos.x - pos2.x) / 64)
+    let roomZ = 0
+
+    if(this._activeTile && this._activeTile.roomX == roomX && this._activeTile.roomY == roomY && this._activeTile.roomZ == roomZ) {
+      return
+    }
+
+    if(roomX < 0 || roomY < 0 || roomX >= this.parsedTileMap.sizeX || roomY >= this.parsedTileMap.sizeY) {
+      if(this._activeTile != undefined) {
+        this._activeTile = undefined
+        this._onActiveTileChange.next(this._activeTile)
+      }
+      return
+    }
+
+    let tileType = this.parsedTileMap.tilemap[roomY][roomX]
+
+    if(tileType == "x") {
+      if(this._activeTile != undefined) {
+        this._activeTile = undefined
+        this._onActiveTileChange.next(this._activeTile)
+      }
+      return
+    }
+
+    this._activeTile = {roomX, roomY, roomZ}
+    this._onActiveTileChange.next(this._activeTile)  
+  }
+
+  private _mouseUp(event: PIXI.InteractionEvent) {
+    if(this._activeTile) {
+      this._onTileClick.next(this._activeTile)
+    }
+  }
+
 }

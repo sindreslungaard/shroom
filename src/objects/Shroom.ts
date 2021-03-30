@@ -34,17 +34,13 @@ export class Shroom {
     resourcePath?: string;
   } & Partial<Dependencies>) {
     const _furnitureData = furnitureData ?? FurnitureData.create(resourcePath);
-    const _avatarLoader =
-      avatarLoader ?? AvatarLoader.createForAssetBundle(resourcePath);
-    const _furnitureLoader =
-      furnitureLoader ??
-      FurnitureLoader.createForJson(_furnitureData, resourcePath);
+    const _avatarLoader = avatarLoader ?? AvatarLoader.createForAssetBundle(resourcePath);
+    const _furnitureLoader = furnitureLoader ?? FurnitureLoader.createForJson(_furnitureData, resourcePath);
     const _configuration = configuration ?? {};
 
     return {
       for: (application: PIXI.Application) => {
-        const _animationTicker =
-          animationTicker ?? AnimationTicker.create(application);
+        const _animationTicker = animationTicker ?? AnimationTicker.create(application);
 
         const realDependencies: Dependencies = {
           animationTicker: _animationTicker,

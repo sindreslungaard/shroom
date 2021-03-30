@@ -409,11 +409,12 @@ class FurnitureVisualizationLayer
     const ignoreMouse = layer?.ignoreMouse != null && layer.ignoreMouse;
     sprite.ignoreMouse = ignoreMouse;
 
-    sprite.events.addEventListener("click", (event) => {
+    /* sprite.events.addEventListener("click", (event) => {
       this._clickHandler.handleClick(event);
-    });
+    }); */
 
     sprite.events.addEventListener("pointerup", (event) => {
+      this._clickHandler.handleClick(event);
       this._clickHandler.handlePointerUp(event);
     });
 

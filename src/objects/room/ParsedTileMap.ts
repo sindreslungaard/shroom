@@ -16,7 +16,14 @@ export class ParsedTileMap {
     return this._data.wallOffsets;
   }
 
-  constructor(private tilemap: TileType[][]) {
+  public sizeX: number = 0
+  public sizeY: number = 0
+
+  constructor(public tilemap: TileType[][]) {
+    this.sizeY = tilemap.length
+    if(this.sizeY > 0) {
+      this.sizeX = tilemap[0].length
+    }
     this._data = parseTileMap(tilemap);
   }
 }

@@ -22,6 +22,7 @@ export class EventManager {
 
   click(event: InteractionEvent, x: number, y: number) {
     const elements = this._performHitTest(x, y);
+
     new Propagation(event, elements.activeNodes, (target, event) =>
       target.triggerClick(event)
     );
@@ -37,7 +38,7 @@ export class EventManager {
     );
   }
 
-  pointerUp(event: InteractionEvent, x: number, y: number) {
+  pointerUp(event: InteractionEvent, x: number, y: number): boolean {
     const elements = this._performHitTest(x, y);
 
     const elementsSet = new Set(elements.activeNodes);
@@ -48,16 +49,20 @@ export class EventManager {
       }
     });
 
-    new Propagation(event, elements.activeNodes, (target, event) =>
+    let pointerUpPropagation = new Propagation(event, elements.activeNodes, (target, event) =>
       target.triggerPointerUp(event)
     );
 
     new Propagation(event, Array.from(clickedNodes), (target, event) => {
       target.triggerClick(event);
     });
+
+    return pointerUpPropagation._stopped
   }
 
   move(event: InteractionEvent, x: number, y: number) {
+    return
+
     const elements = this._performHitTest(x, y);
     const current = new Set(
       elements.activeNodes.filter(
@@ -169,9 +174,9 @@ export class EventManager {
 }
 
 class Propagation {
-  private _skip = new Set<EventGroupIdentifier>();
-  private _allow = new Set<EventGroupIdentifier>();
-  private _stopped = false;
+  public _skip = new Set<EventGroupIdentifier>();
+  public _allow = new Set<EventGroupIdentifier>();
+  public _stopped = false;
 
   constructor(
     private event: InteractionEvent,

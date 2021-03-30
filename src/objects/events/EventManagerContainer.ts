@@ -6,48 +6,46 @@ export class EventManagerContainer {
 
   constructor(
     private _application: PIXI.Application,
-    private _eventManager: EventManager
+    private _eventManager: EventManager,
+    onMouseMove: Function,
+    onMouseUp: Function
   ) {
     this._updateRectangle();
 
     _application.ticker.add(this._updateRectangle);
 
-    const interactionManager: PIXI.InteractionManager = this._application
-      .renderer.plugins.interaction;
+    const interactionManager: PIXI.InteractionManager = this._application.renderer.plugins.interaction;
 
-    interactionManager.addListener(
-      "pointermove",
-      (event: PIXI.InteractionEvent) => {
+    const pointerUp = (event: PIXI.InteractionEvent) => {
+      const position = event.data.getLocalPosition(this._application.stage);
+
+      let cancelled = this._eventManager.pointerUp(event, position.x, position.y);
+
+      if(!cancelled) {
+        onMouseUp()
+      }
+    }
+
+    const pointerDown = (event: PIXI.InteractionEvent) => {
+      const position = event.data.getLocalPosition(this._application.stage);
+
+      this._eventManager.pointerDown(event, position.x, position.y);
+    }
+    /* interactionManager.addListener("pointermove", (event: PIXI.InteractionEvent) => {
         const position = event.data.getLocalPosition(this._application.stage);
 
         this._eventManager.move(event, position.x, position.y);
-      },
-      true
-    );
+    }, true); */
 
-    interactionManager.addListener(
-      "pointerup",
-      (event: PIXI.InteractionEvent) => {
-        const position = event.data.getLocalPosition(this._application.stage);
-
-        this._eventManager.pointerUp(event, position.x, position.y);
-      },
-      true
-    );
-
-    interactionManager.addListener(
-      "pointerdown",
-      (event: PIXI.InteractionEvent) => {
-        const position = event.data.getLocalPosition(this._application.stage);
-
-        this._eventManager.pointerDown(event, position.x, position.y);
-      },
-      true
-    );
+    interactionManager.on("pointermove", onMouseMove, true)
+    interactionManager.on("pointerup", pointerUp, true);
+    interactionManager.on("pointerdown", pointerDown, true);
   }
 
   destroy() {
     this._application.ticker.remove(this._updateRectangle);
+    const interactionManager: PIXI.InteractionManager = this._application.renderer.plugins.interaction;
+    interactionManager.removeAllListeners()
   }
 
   private _updateRectangle = () => {
