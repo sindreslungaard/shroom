@@ -154,6 +154,21 @@ function getDrawPart({
     assets = [];
   }
 
+  for(let i = 0; i < 10; i++) {
+    if(assets[i] != null) {
+      continue
+    }
+    const asset = assetsData.getAsset(getAssetName(i));
+    if(asset == null) {
+      continue
+    }
+    assets.push({
+      ...asset,
+      x: asset.x + (asset.flipH ? x : -x),
+      y: asset.y - y,
+    })
+  }
+
   return {
     mask: false,
     shadow: false,

@@ -29,6 +29,7 @@ export {
   BasicFurnitureVisualization,
 } from "./objects/furniture/visualization/BasicFurnitureVisualization";
 export { FurnitureBottleVisualization } from "./objects/furniture/visualization/FurnitureBottleVisualization";
+export { FurnitureCounterClockVisualization } from "./objects/furniture/visualization/FurnitureCounterClockVisualization";
 export { FurnitureVisualization } from "./objects/furniture/visualization/FurnitureVisualization";
 export { IFurnitureVisualization } from "./objects/furniture/IFurnitureVisualization";
 

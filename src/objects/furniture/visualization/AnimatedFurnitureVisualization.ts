@@ -42,6 +42,8 @@ export class AnimatedFurnitureVisualization extends FurnitureVisualization {
     return this._currentAnimationId;
   }
 
+  public lockCurrentFrameIndex = false
+
   public set animationId(value) {
     this._overrideAnimation = value;
     this._refreshFurniture = true;
@@ -205,7 +207,10 @@ export class AnimatedFurnitureVisualization extends FurnitureVisualization {
         this._lastFramePlayedMap.set(part.layerIndex, false);
       }
 
-      part.setCurrentFrameIndex(frameIndex);
+      if(!this.lockCurrentFrameIndex) {
+        part.setCurrentFrameIndex(frameIndex);
+      }
+      
     });
   }
 

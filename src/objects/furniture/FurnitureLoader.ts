@@ -48,6 +48,7 @@ export class FurnitureLoader implements IFurnitureLoader {
           `${resourcePath}/hof_furni/${normalizePath(revision, type)}.shroom`
         );
         return new JsonFurnitureAssetBundle(bundle);
+
       },
     });
   }

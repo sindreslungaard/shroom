@@ -517,7 +517,11 @@ export class BaseFurniture implements IFurnitureEventHandlers, IEventGroup {
       this._updateFurniture();
 
       this._onLoad && this._onLoad();
+    }).catch(err => {
+      //@ts-ignore
+      console.log("failed to load furni: " + this._type.type)
     });
+    
 
     this._updateFurniture();
   }
