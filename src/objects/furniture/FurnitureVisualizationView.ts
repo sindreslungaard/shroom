@@ -331,7 +331,7 @@ class FurnitureVisualizationLayer
 
     this._mountedSprites.add(sprite);
     this._container.addChild(sprite);
-    this._overOutHandler.register(sprite.events);
+    //this._overOutHandler.register(sprite.events);
   }
 
   private _destroySprites() {
@@ -355,6 +355,12 @@ class FurnitureVisualizationLayer
   }
 
   private _updateSprites() {
+    
+    //@ts-ignore
+    if(window.startdebug) {
+      debugger;
+    }
+
     const frameIndex = this._frameIndex;
     const sprite = this._getSprite(frameIndex);
 
@@ -494,7 +500,7 @@ class FurnitureVisualizationLayer
     this._setSpriteVisible(sprite, false);
     this._sprites.set(frameIndex, sprite);
 
-    this._overOutHandler.register(sprite.events);
+    //this._overOutHandler.register(sprite.events);
 
     return sprite;
   }
