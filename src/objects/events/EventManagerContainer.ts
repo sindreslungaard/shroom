@@ -8,7 +8,8 @@ export class EventManagerContainer {
     private _application: PIXI.Application,
     private _eventManager: EventManager,
     onMouseMove: Function,
-    onMouseUp: Function
+    onMouseUp: Function,
+    refreshHitboxes: Function,
   ) {
     this._updateRectangle();
 
@@ -38,8 +39,8 @@ export class EventManagerContainer {
     }, true); */
 
     interactionManager.on("pointermove", onMouseMove, true)
-    interactionManager.on("pointerup", pointerUp, true);
-    interactionManager.on("pointerdown", pointerDown, true);
+    interactionManager.on("pointerup", (event: PIXI.InteractionEvent) => { refreshHitboxes(); pointerUp(event) }, true);
+    interactionManager.on("pointerdown", (event: PIXI.InteractionEvent) => { refreshHitboxes(); pointerDown(event) }, true);
   }
 
   destroy() {

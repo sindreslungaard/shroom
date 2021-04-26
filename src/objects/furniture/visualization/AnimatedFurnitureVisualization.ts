@@ -59,7 +59,11 @@ export class AnimatedFurnitureVisualization extends FurnitureVisualization {
   }
 
   setCurrentAnimation(newAnimation: number) {
+
+    if(!this.view) return
+
     this._animationQueueStartFrame = undefined;
+    
     // Skip the transitions of the initial animation change.
     this._animationQueue = this._getAnimationList(
       this.view.getVisualizationData(),
@@ -94,8 +98,8 @@ export class AnimatedFurnitureVisualization extends FurnitureVisualization {
   update() {
     if (this._currentDirection == null) return;
 
-    this.view.setDisplayDirection(this._currentDirection);
-    this.view.updateDisplay();
+    this.view?.setDisplayDirection(this._currentDirection);
+    this.view?.updateDisplay();
     this._update();
   }
 
@@ -169,16 +173,16 @@ export class AnimatedFurnitureVisualization extends FurnitureVisualization {
   private _updateLayers() {
     if (this.modifier != null) {
       const modifier = this.modifier;
-      this.view.getLayers().forEach((layer) => modifier(layer));
+      this.view?.getLayers().forEach((layer) => modifier(layer));
     }
   }
 
   private _updateFurniture() {
     if (!this.mounted) return;
 
-    this.view.setDisplayDirection(this._currentDirection ?? 0);
-    this.view.setDisplayAnimation(this.animationId?.toString());
-    this.view.updateDisplay();
+    this.view?.setDisplayDirection(this._currentDirection ?? 0);
+    this.view?.setDisplayAnimation(this.animationId?.toString());
+    this.view?.updateDisplay();
 
     this._updateLayers();
     this._update();
@@ -187,7 +191,7 @@ export class AnimatedFurnitureVisualization extends FurnitureVisualization {
   private _update(skipLayerUpdate = false) {
     const frameCount = this._animationFrameCount ?? 1;
 
-    this.view.getLayers().forEach((part) => {
+    this.view?.getLayers().forEach((part) => {
       if (this.modifier != null) {
         part = this.modifier(part);
       }

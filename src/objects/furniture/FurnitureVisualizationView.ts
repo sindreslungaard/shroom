@@ -178,7 +178,7 @@ class FurnitureVisualizationLayer
   public readonly layerIndex: number;
   public readonly assetCount: number;
 
-  private _sprites = new Map<number, FurnitureSprite>();
+  private _sprites = new Map<string, FurnitureSprite>();
 
   private _x: number | undefined;
   private _y: number | undefined;
@@ -329,6 +329,12 @@ class FurnitureVisualizationLayer
   private _addSprite(sprite: FurnitureSprite) {
     if (this._mountedSprites.has(sprite)) return;
 
+    //@ts-ignore
+    if(window.viewsrc) {
+      //@ts-ignore
+      console.log(this._parent._src)
+    }
+
     this._mountedSprites.add(sprite);
     this._container.addChild(sprite);
     //this._overOutHandler.register(sprite.events);
@@ -355,11 +361,6 @@ class FurnitureVisualizationLayer
   }
 
   private _updateSprites() {
-    
-    //@ts-ignore
-    if(window.startdebug) {
-      debugger;
-    }
 
     const frameIndex = this._frameIndex;
     const sprite = this._getSprite(frameIndex);
@@ -383,22 +384,26 @@ class FurnitureVisualizationLayer
 
     if (asset == null) return;
 
-    const texture = this._getTexture(getAssetTextureName(asset));
+    const assetName = getAssetTextureName(asset)
+
+    const texture = this._getTexture(assetName);
 
     return {
       asset,
+      assetName,
       texture,
     };
   }
 
   private _getSprite(frameIndex: number) {
-    const current = this._sprites.get(frameIndex);
-    if (current != null) {
-      return current;
-    }
 
     const spriteInfo = this._getSpriteInfo(frameIndex);
     if (spriteInfo == null) return;
+
+    const current = this._sprites.get(spriteInfo.assetName);
+    if (current != null) {
+      return current;
+    }
 
     const { z, layer, shadow, mask, tint } = this._part;
     const { asset, texture } = spriteInfo;
@@ -498,7 +503,7 @@ class FurnitureVisualizationLayer
     }
 
     this._setSpriteVisible(sprite, false);
-    this._sprites.set(frameIndex, sprite);
+    this._sprites.set(spriteInfo.assetName, sprite);
 
     //this._overOutHandler.register(sprite.events);
 

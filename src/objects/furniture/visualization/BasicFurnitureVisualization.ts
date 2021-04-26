@@ -47,10 +47,10 @@ export class StaticFurnitureVisualization extends FurnitureVisualization {
   private _update() {
     if (this._currentDirection == null) return;
 
-    this.view.setDisplayAnimation(this._animationId);
-    this.view.setDisplayDirection(this._currentDirection);
-    this.view.updateDisplay();
-    this.view.getLayers().forEach((layer) => layer.setCurrentFrameIndex(0));
+    this.view?.setDisplayAnimation(this._animationId);
+    this.view?.setDisplayDirection(this._currentDirection);
+    this.view?.updateDisplay();
+    this.view?.getLayers().forEach((layer) => layer.setCurrentFrameIndex(0));
   }
 }
 

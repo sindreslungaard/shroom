@@ -7,7 +7,7 @@ export abstract class FurnitureVisualization
   protected _previousView: IFurnitureVisualizationView | undefined;
 
   protected get view() {
-    if (this._view == null) throw new Error("No view mounted");
+    //if (this._view == null) throw new Error("No view mounted");
 
     return this._view;
   }

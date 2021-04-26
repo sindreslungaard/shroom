@@ -463,6 +463,9 @@ export class BaseFurniture implements IFurnitureEventHandlers, IEventGroup {
       loadFurniResult
     );
 
+    //@ts-ignore
+    view._src = this._type
+
     view.x = this.x;
     view.y = this.y;
     view.zIndex = this.zIndex;

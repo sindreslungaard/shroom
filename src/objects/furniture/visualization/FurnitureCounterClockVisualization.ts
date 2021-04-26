@@ -45,7 +45,7 @@ export class FurnitureCounterClockVisualization extends FurnitureVisualization {
         
         this._base.updateAnimation(animation);
 
-        this.view.getLayers().forEach(layer => {
+        this.view?.getLayers().forEach(layer => {
 
             switch(layer.tag) {
                 case FurnitureCounterClockVisualization.SECONDS_SPRITE: layer.setCurrentFrameIndex(Math.floor((parseInt(animation) % 60) % 10)); break;

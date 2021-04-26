@@ -226,8 +226,13 @@ export class HitSprite extends PIXI.Sprite implements IEventTarget {
   }
 
   updateTransform() {
+    if(this._ignore) {
+      return
+    }
     super.updateTransform();
+  }
 
+  updateHitbox() {
     this._rectangleSubject.next(this.getHitBox());
   }
 }

@@ -10,6 +10,7 @@ import { getZOrder } from "../../util/getZOrder";
 import { ParsedTileType, ParsedTileWall } from "../../util/parseTileMap";
 import { EventManager } from "../events/EventManager";
 import { EventManagerContainer } from "../events/EventManagerContainer";
+import { HitSprite } from "../hitdetection/HitSprite";
 import { ILandscapeContainer } from "./ILandscapeContainer";
 import { IRoomRectangle, Rectangle } from "./IRoomRectangle";
 import { ParsedTileMap } from "./ParsedTileMap";
@@ -131,7 +132,8 @@ export class RoomModelVisualization
         this._application,
         this._eventManager,
         this._mouseMove.bind(this),
-        this._mouseUp.bind(this)
+        this._mouseUp.bind(this),
+        this.refreshHitboxes.bind(this)
       );
     }
 
@@ -139,6 +141,30 @@ export class RoomModelVisualization
 
     this._application.ticker.add(this._handleTick);
 
+  }
+
+  
+
+  refreshHitboxes() {
+    const dorecursive = (displayObject: any) => {
+
+      if(displayObject.updateHitbox && !displayObject._ignore && displayObject.visible) {
+        displayObject.updateHitbox()
+      } else if(displayObject.children && Array.isArray(displayObject.children)) {
+        for(let child of displayObject.children) {
+          dorecursive(child)
+        }
+      }
+    }
+
+    for(let child of this._primaryLayer.children) {
+      dorecursive(child)
+    }
+
+    for(let child of this._behindWallLayer.children) {
+      dorecursive(child)
+    }
+    
   }
 
   addPart(part: IRoomPart): PartNode {
